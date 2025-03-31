@@ -1,27 +1,186 @@
-let display = document.getElementById("display");
-let scientificVisible = false;
-
-function appendCharacter(char) {
-    display.value += char;
+:root {
+    --primary-color: #4285f4;
+    --operator-color: #fbbc05;
+    --equals-color: #34a853;
+    --clear-color: #ea4335;
+    --digit-color: #f1f3f4;
+    --scientific-color: #d2e3fc;
+    --display-bg: #202124;
+    --display-text: #e8eaed;
+    --button-hover: #d6d6d6;
+    --button-active: #bdbdbd;
 }
 
-function clearDisplay() {
-    display.value = "";
+body {
+    font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 
+                 'Helvetica Neue', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
 }
 
-function deleteLast() {
-    display.value = display.value.slice(0, -1);
+.calculator {
+    width: 320px;
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
-function calculateResult() {
-    try {
-        display.value = eval(display.value);
-    } catch {
-        display.value = "Error";
+.display-container {
+    margin-bottom: 15px;
+}
+
+#display {
+    width: 100%;
+    height: 60px;
+    text-align: right;
+    font-size: 2em;
+    padding: 10px 15px;
+    border: none;
+    outline: none;
+    background: var(--display-bg);
+    color: var(--display-text);
+    border-radius: 10px;
+    margin-bottom: 5px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    font-family: 'Courier New', monospace;
+}
+
+.history-display {
+    height: 20px;
+    text-align: right;
+    font-size: 0.9em;
+    color: #666;
+    padding: 0 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.buttons-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.memory-buttons, .main-buttons, .scientific-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+button {
+    padding: 18px 0;
+    font-size: 1.2em;
+    border: none;
+    background: var(--digit-color);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+button:hover {
+    background: var(--button-hover);
+}
+
+/* Special button styles */
+.operator-btn {
+    background: var(--operator-color);
+    color: white;
+}
+
+.operator-btn:hover {
+    background: #e9b000;
+}
+
+.equals-btn {
+    background: var(--equals-color);
+    color: white;
+    grid-column: span 1;
+}
+
+.equals-btn:hover {
+    background: #2d9248;
+}
+
+.clear-btn, .delete-btn {
+    background: var(--clear-color);
+    color: white;
+}
+
+.clear-btn:hover, .delete-btn:hover {
+    background: #d33426;
+}
+
+.digit-btn {
+    background: var(--digit-color);
+}
+
+.zero-btn {
+    grid-column: span 1;
+}
+
+.memory-btn {
+    font-size: 0.9em;
+    padding: 12px 0;
+    background: #e0e0e0;
+}
+
+.sci-btn {
+    background: var(--scientific-color);
+    font-size: 0.9em;
+}
+
+.sci-toggle-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.sci-toggle-btn:hover {
+    background: #3367d6;
+}
+
+.scientific-buttons {
+    display: none;
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive design */
+@media (max-width: 400px) {
+    .calculator {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    button {
+        padding: 15px 0;
+        font-size: 1.1em;
     }
 }
 
-function toggleScientific() {
-    scientificVisible = !scientificVisible;
-    document.querySelector(".scientific-buttons").style.display = scientificVisible ? "grid" : "none";
+@media (max-height: 600px) {
+    body {
+        align-items: flex-start;
+        padding-top: 20px;
+    }
 }
