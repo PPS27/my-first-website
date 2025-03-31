@@ -3,79 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scientific Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-align: right;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 3px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        .operator {
+            background-color: #ff9800;
+            color: white;
+        }
+        .operator:hover {
+            background-color: #e68a00;
+        }
+        .equals {
+            background-color: #4caf50;
+            color: white;
+        }
+        .equals:hover {
+            background-color: #3e8e41;
+        }
+        .clear {
+            background-color: #f44336;
+            color: white;
+        }
+        .clear:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <body>
-    <div class="calculator" role="application" aria-label="Scientific Calculator">
-        <div class="display-container">
-            <input type="text" id="display" disabled aria-label="Calculator display" 
-                   aria-live="polite" class="display-input">
-            <div id="history" class="history-display" aria-live="polite"></div>
-        </div>
-        
-        <div class="buttons-grid">
-            <!-- Memory functions -->
-            <div class="memory-buttons">
-                <button onclick="memoryRecall()" class="memory-btn" aria-label="Memory recall">MR</button>
-                <button onclick="memoryClear()" class="memory-btn" aria-label="Memory clear">MC</button>
-                <button onclick="memoryAdd()" class="memory-btn" aria-label="Memory add">M+</button>
-                <button onclick="memorySubtract()" class="memory-btn" aria-label="Memory subtract">M-</button>
-            </div>
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="appendToDisplay('/')" class="operator">/</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
+            <button onclick="backspace()">⌫</button>
             
-            <!-- Main buttons -->
-            <div class="main-buttons">
-                <button onclick="clearDisplay()" class="clear-btn" aria-label="Clear">C</button>
-                <button onclick="deleteLast()" class="delete-btn" aria-label="Delete last character">DEL</button>
-                <button onclick="appendCharacter('%')" class="operator-btn" aria-label="Percentage">%</button>
-                <button onclick="appendCharacter('/')" class="operator-btn" aria-label="Divide">÷</button>
-
-                <button onclick="appendCharacter('7')" class="digit-btn" aria-label="Seven">7</button>
-                <button onclick="appendCharacter('8')" class="digit-btn" aria-label="Eight">8</button>
-                <button onclick="appendCharacter('9')" class="digit-btn" aria-label="Nine">9</button>
-                <button onclick="appendCharacter('*')" class="operator-btn" aria-label="Multiply">×</button>
-
-                <button onclick="appendCharacter('4')" class="digit-btn" aria-label="Four">4</button>
-                <button onclick="appendCharacter('5')" class="digit-btn" aria-label="Five">5</button>
-                <button onclick="appendCharacter('6')" class="digit-btn" aria-label="Six">6</button>
-                <button onclick="appendCharacter('-')" class="operator-btn" aria-label="Subtract">−</button>
-
-                <button onclick="appendCharacter('1')" class="digit-btn" aria-label="One">1</button>
-                <button onclick="appendCharacter('2')" class="digit-btn" aria-label="Two">2</button>
-                <button onclick="appendCharacter('3')" class="digit-btn" aria-label="Three">3</button>
-                <button onclick="appendCharacter('+')" class="operator-btn" aria-label="Add">+</button>
-
-                <button onclick="appendCharacter('0')" class="digit-btn zero-btn" aria-label="Zero">0</button>
-                <button onclick="appendCharacter('.')" class="digit-btn" aria-label="Decimal point">.</button>
-                <button onclick="calculateResult()" class="equals-btn" aria-label="Equals">=</button>
-                <button onclick="toggleScientific()" class="sci-toggle-btn" aria-label="Toggle scientific functions">Sci</button>
-            </div>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('-')" class="operator">-</button>
             
-            <!-- Scientific buttons (initially hidden) -->
-            <div class="scientific-buttons" id="scientificButtons" style="display: none;">
-                <button onclick="appendCharacter('Math.PI')" class="sci-btn" aria-label="Pi constant">π</button>
-                <button onclick="appendCharacter('Math.E')" class="sci-btn" aria-label="Euler's number">e</button>
-                <button onclick="appendFunction('Math.sqrt(', ')')" class="sci-btn" aria-label="Square root">√</button>
-                <button onclick="appendFunction('Math.log(', ')')" class="sci-btn" aria-label="Natural logarithm">ln</button>
-                <button onclick="appendFunction('Math.log10(', ')')" class="sci-btn" aria-label="Base 10 logarithm">log</button>
-
-                <button onclick="appendFunction('Math.sin(', ')')" class="sci-btn" aria-label="Sine">sin</button>
-                <button onclick="appendFunction('Math.cos(', ')')" class="sci-btn" aria-label="Cosine">cos</button>
-                <button onclick="appendFunction('Math.tan(', ')')" class="sci-btn" aria-label="Tangent">tan</button>
-                <button onclick="appendCharacter('**')" class="sci-btn" aria-label="Exponent">^</button>
-                
-                <button onclick="appendFunction('Math.asin(', ')')" class="sci-btn" aria-label="Inverse sine">sin⁻¹</button>
-                <button onclick="appendFunction('Math.acos(', ')')" class="sci-btn" aria-label="Inverse cosine">cos⁻¹</button>
-                <button onclick="appendFunction('Math.atan(', ')')" class="sci-btn" aria-label="Inverse tangent">tan⁻¹</button>
-                <button onclick="appendFunction('Math.pow(', ',')" class="sci-btn" aria-label="Power function">x^y</button>
-                
-                <button onclick="appendFunction('Math.abs(', ')')" class="sci-btn" aria-label="Absolute value">abs</button>
-                <button onclick="appendFunction('Math.floor(', ')')" class="sci-btn" aria-label="Floor">floor</button>
-                <button onclick="appendFunction('Math.ceil(', ')')" class="sci-btn" aria-label="Ceiling">ceil</button>
-                <button onclick="appendFunction('Math.round(', ')')" class="sci-btn" aria-label="Round">round</button>
-            </div>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('+')" class="operator">+</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="calculate()" class="equals" rowspan="2">=</button>
+            
+            <button onclick="appendToDisplay('0')" colspan="2">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+        
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+        
+        function backspace() {
+            let display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+        
+        function calculate() {
+            try {
+                let expression = document.getElementById('display').value;
+                // Replace × with * for proper evaluation
+                expression = expression.replace(/×/g, '*');
+                const result = eval(expression);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+            }
+        }
+    </script>
 </body>
 </html>
