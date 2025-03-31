@@ -1,186 +1,236 @@
-:root {
-    --primary-color: #4285f4;
-    --operator-color: #fbbc05;
-    --equals-color: #34a853;
-    --clear-color: #ea4335;
-    --digit-color: #f1f3f4;
-    --scientific-color: #d2e3fc;
-    --display-bg: #202124;
-    --display-text: #e8eaed;
-    --button-hover: #d6d6d6;
-    --button-active: #bdbdbd;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Calculator</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --display-bg: #252525;
+            --button-bg: #2d2d2d;
+            --button-hover: #3a3a3a;
+            --operator-bg: #ff9500;
+            --operator-hover: #ffaa33;
+            --equals-bg: #28a745;
+            --equals-hover: #34ce57;
+            --clear-bg: #dc3545;
+            --clear-hover: #e4606d;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --neon-glow: 0 0 10px rgba(255, 149, 0, 0.7);
+        }
 
-body {
-    font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 
-                 'Helvetica Neue', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #333;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
 
-.calculator {
-    width: 320px;
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: var(--text-light);
+        }
 
-.display-container {
-    margin-bottom: 15px;
-}
+        .calculator {
+            width: 320px;
+            padding: 25px;
+            border-radius: 20px;
+            background: var(--bg-color);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 -5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 5px 15px rgba(255, 255, 255, 0.05);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
 
-#display {
-    width: 100%;
-    height: 60px;
-    text-align: right;
-    font-size: 2em;
-    padding: 10px 15px;
-    border: none;
-    outline: none;
-    background: var(--display-bg);
-    color: var(--display-text);
-    border-radius: 10px;
-    margin-bottom: 5px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-    font-family: 'Courier New', monospace;
-}
+        #display {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 2rem;
+            text-align: right;
+            border: none;
+            border-radius: 10px;
+            background: var(--display-bg);
+            color: var(--text-light);
+            box-shadow: 
+                inset 0 2px 5px rgba(0, 0, 0, 0.5),
+                0 2px 5px rgba(0, 0, 0, 0.3);
+            outline: none;
+        }
 
-.history-display {
-    height: 20px;
-    text-align: right;
-    font-size: 0.9em;
-    color: #666;
-    padding: 0 15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
 
-.buttons-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        button {
+            height: 60px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--button-bg);
+            color: var(--text-light);
+            box-shadow: 
+                0 5px 10px rgba(0, 0, 0, 0.3),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.2),
+                inset 0 3px 5px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
 
-.memory-buttons, .main-buttons, .scientific-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-}
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+        }
 
-button {
-    padding: 18px 0;
-    font-size: 1.2em;
-    border: none;
-    background: var(--digit-color);
-    cursor: pointer;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        button:hover {
+            filter: brightness(1.2);
+        }
 
-button:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 10%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 90%
+            );
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-button:hover {
-    background: var(--button-hover);
-}
+        button:hover::after {
+            opacity: 1;
+        }
 
-/* Special button styles */
-.operator-btn {
-    background: var(--operator-color);
-    color: white;
-}
+        .operator {
+            background: var(--operator-bg);
+            color: var(--text-dark);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
 
-.operator-btn:hover {
-    background: #e9b000;
-}
+        .operator:hover {
+            background: var(--operator-hover);
+            box-shadow: var(--neon-glow);
+        }
 
-.equals-btn {
-    background: var(--equals-color);
-    color: white;
-    grid-column: span 1;
-}
+        .equals {
+            background: var(--equals-bg);
+        }
 
-.equals-btn:hover {
-    background: #2d9248;
-}
+        .equals:hover {
+            background: var(--equals-hover);
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+        }
 
-.clear-btn, .delete-btn {
-    background: var(--clear-color);
-    color: white;
-}
+        .clear {
+            background: var(--clear-bg);
+        }
 
-.clear-btn:hover, .delete-btn:hover {
-    background: #d33426;
-}
+        .clear:hover {
+            background: var(--clear-hover);
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.7);
+        }
 
-.digit-btn {
-    background: var(--digit-color);
-}
+        /* Special animation for equals button */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-.zero-btn {
-    grid-column: span 1;
-}
+        .equals:active {
+            animation: pulse 0.3s;
+        }
 
-.memory-btn {
-    font-size: 0.9em;
-    padding: 12px 0;
-    background: #e0e0e0;
-}
+        /* Responsive design */
+        @media (max-width: 400px) {
+            .calculator {
+                width: 90%;
+                padding: 15px;
+            }
+            
+            button {
+                height: 50px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="appendToDisplay('/')" class="operator">/</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
+            <button onclick="backspace()">⌫</button>
+            
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('-')" class="operator">-</button>
+            
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('+')" class="operator">+</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="calculate()" class="equals">=</button>
+            
+            <button onclick="appendToDisplay('0')" style="grid-column: span 2">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+        </div>
+    </div>
 
-.sci-btn {
-    background: var(--scientific-color);
-    font-size: 0.9em;
-}
-
-.sci-toggle-btn {
-    background: var(--primary-color);
-    color: white;
-}
-
-.sci-toggle-btn:hover {
-    background: #3367d6;
-}
-
-.scientific-buttons {
-    display: none;
-    margin-top: 10px;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive design */
-@media (max-width: 400px) {
-    .calculator {
-        width: 90%;
-        padding: 15px;
-    }
-    
-    button {
-        padding: 15px 0;
-        font-size: 1.1em;
-    }
-}
-
-@media (max-height: 600px) {
-    body {
-        align-items: flex-start;
-        padding-top: 20px;
-    }
-}
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+        
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+        
+        function backspace() {
+            let display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+        
+        function calculate() {
+            try {
+                let expression = document.getElementById('display').value;
+                expression = expression.replace(/×/g, '*');
+                const result = eval(expression);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+                setTimeout(clearDisplay, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
