@@ -1,153 +1,175 @@
-// Calculator state
-let display = document.getElementById("display");
-let historyDisplay = document.getElementById("history");
-let memory = 0;
-let scientificVisible = false;
-let lastResult = null;
+document.addEventListener('DOMContentLoaded', function() {
+    const display = document.getElementById('display');
+    let currentInput = '';
+    let previousInput = '';
+    let operation = null;
+    let resetScreen = false;
 
-// Main functions
-function appendCharacter(char) {
-    // If there was an error, clear it before appending
-    if (display.value === "Error" || display.value === "Infinity" || display.value === "NaN") {
-        display.value = "";
+    // Update display
+    function updateDisplay(value) {
+        display.value = value;
     }
-    
-    // Handle special constants
-    if (char === "Math.PI") {
-        display.value += Math.PI;
-    } else if (char === "Math.E") {
-        display.value += Math.E;
-    } else {
-        display.value += char;
-    }
-}
 
-function appendFunction(func, closingChar = "") {
-    if (display.value === "Error" || display.value === "Infinity" || display.value === "NaN") {
-        display.value = "";
-    }
-    display.value = func + display.value + closingChar;
-}
-
-function clearDisplay() {
-    display.value = "";
-}
-
-function deleteLast() {
-    display.value = display.value.slice(0, -1);
-}
-
-function calculateResult() {
-    try {
-        // Save current expression to history
-        historyDisplay.textContent = display.value + " =";
-        
-        // Replace visual operators with JavaScript operators
-        let expression = display.value
-            .replace(/×/g, '*')
-            .replace(/÷/g, '/')
-            .replace(/\−/g, '-');
-        
-        // Evaluate the expression
-        lastResult = eval(expression);
-        display.value = lastResult;
-        
-        // Handle special cases
-        if (!isFinite(lastResult)) {
-            throw new Error("Invalid result");
+    // Append number or decimal
+    function appendNumber(number) {
+        if (display.value === '0' || resetScreen) {
+            resetScreen = false;
+            currentInput = number;
+        } else {
+            currentInput += number;
         }
-    } catch (error) {
-        display.value = "Error";
-        console.error("Calculation error:", error);
+        updateDisplay(currentInput);
     }
-}
 
-// Memory functions
-function memoryClear() {
-    memory = 0;
-    display.value = "";
-}
-
-function memoryRecall() {
-    display.value = memory;
-}
-
-function memoryAdd() {
-    try {
-        memory += eval(display.value || "0");
-    } catch {
-        memory = 0;
+    // Append decimal point
+    function appendDecimal() {
+        if (resetScreen) {
+            resetScreen = false;
+            currentInput = '0.';
+            updateDisplay(currentInput);
+            return;
+        }
+        if (!currentInput.includes('.')) {
+            currentInput += '.';
+            updateDisplay(currentInput);
+        }
     }
-}
 
-function memorySubtract() {
-    try {
-        memory -= eval(display.value || "0");
-    } catch {
-        memory = 0;
+    // Handle operations
+    function handleOperation(op) {
+        if (operation !== null && !resetScreen) calculate();
+        previousInput = currentInput || previousInput;
+        currentInput = '';
+        operation = op;
+        resetScreen = true;
     }
-}
 
-// Scientific functions toggle
-function toggleScientific() {
-    scientificVisible = !scientificVisible;
-    const sciButtons = document.querySelector(".scientific-buttons");
-    sciButtons.style.display = scientificVisible ? "grid" : "none";
-    
-    // Add animation class
-    sciButtons.classList.add("animate-toggle");
-    setTimeout(() => sciButtons.classList.remove("animate-toggle"), 300);
-}
+    // Calculate result
+    function calculate() {
+        if (operation === null || resetScreen) return;
+        
+        let result;
+        const prev = parseFloat(previousInput);
+        const current = parseFloat(currentInput);
 
-// Keyboard support
-document.addEventListener('keydown', (e) => {
-    const key = e.key;
-    
-    // Prevent default for calculator keys
-    if (/[0-9\.\+\-\*\/\%\^\(\)]/.test(key) || 
-        key === "Enter" || key === "Backspace" || key === "Escape") {
-        e.preventDefault();
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (operation) {
+            case '+':
+                result = prev + current;
+                break;
+            case '-':
+                result = prev - current;
+                break;
+            case '×':
+                result = prev * current;
+                break;
+            case '÷':
+                result = prev / current;
+                break;
+            default:
+                return;
+        }
+
+        // Handle division by zero
+        if (operation === '÷' && current === 0) {
+            showError("Cannot divide by zero");
+            return;
+        }
+
+        currentInput = result.toString();
+        operation = null;
+        resetScreen = true;
+        updateDisplay(currentInput);
+        
+        // Add to history
+        addToHistory(`${previousInput} ${operation} ${currentInput} = ${result}`);
     }
-    
-    // Map keys to calculator functions
-    if (/[0-9]/.test(key)) {
-        appendCharacter(key);
-    } else if (key === '.') {
-        appendCharacter('.');
-    } else if (key === '+') {
-        appendCharacter('+');
-    } else if (key === '-') {
-        appendCharacter('−');
-    } else if (key === '*') {
-        appendCharacter('×');
-    } else if (key === '/') {
-        appendCharacter('÷');
-    } else if (key === '%') {
-        appendCharacter('%');
-    } else if (key === '(' || key === ')') {
-        appendCharacter(key);
-    } else if (key === 'Enter' || key === '=') {
-        calculateResult();
-    } else if (key === 'Backspace') {
-        deleteLast();
-    } else if (key === 'Escape') {
-        clearDisplay();
-    } else if (key === 'm' || key === 'M') {
-        toggleScientific();
-    }
-});
 
-// Add button press effect
-document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('mousedown', () => {
-        button.classList.add('button-press');
+    // Clear everything
+    function clearAll() {
+        currentInput = '';
+        previousInput = '';
+        operation = null;
+        updateDisplay('0');
+    }
+
+    // Delete last character
+    function deleteLastChar() {
+        if (resetScreen) return;
+        currentInput = currentInput.slice(0, -1);
+        if (currentInput === '') {
+            currentInput = '0';
+            resetScreen = true;
+        }
+        updateDisplay(currentInput);
+    }
+
+    // Show error message
+    function showError(message) {
+        updateDisplay(message);
+        setTimeout(() => {
+            if (currentInput === message) {
+                clearAll();
+            }
+        }, 1500);
+    }
+
+    // Add calculation to history (you could implement a visible history panel)
+    function addToHistory(calculation) {
+        console.log('Calculation:', calculation);
+        // In a real app, you might add this to a visible history panel
+    }
+
+    // Percentage function
+    function percentage() {
+        if (currentInput === '') return;
+        currentInput = (parseFloat(currentInput) / 100).toString();
+        updateDisplay(currentInput);
+    }
+
+    // Toggle positive/negative
+    function toggleSign() {
+        if (currentInput === '' || currentInput === '0') return;
+        currentInput = (parseFloat(currentInput) * -1).toString();
+        updateDisplay(currentInput);
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+        if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+        else if (e.key === '.') appendDecimal();
+        else if (e.key === '=' || e.key === 'Enter') calculate();
+        else if (e.key === 'Escape') clearAll();
+        else if (e.key === 'Backspace') deleteLastChar();
+        else if (e.key === '+') handleOperation('+');
+        else if (e.key === '-') handleOperation('-');
+        else if (e.key === '*') handleOperation('×');
+        else if (e.key === '/') {
+            e.preventDefault(); // Prevent quick search in some browsers
+            handleOperation('÷');
+        }
+        else if (e.key === '%') percentage();
     });
-    
-    button.addEventListener('mouseup', () => {
-        button.classList.remove('button-press');
-    });
-    
-    button.addEventListener('mouseleave', () => {
-        button.classList.remove('button-press');
-    });
+
+    // Button click handlers
+    window.appendToDisplay = function(value) {
+        if (value >= '0' && value <= '9') {
+            appendNumber(value);
+        } else if (value === '.') {
+            appendDecimal();
+        }
+    };
+
+    window.clearDisplay = clearAll;
+    window.backspace = deleteLastChar;
+    window.calculate = calculate;
+
+    // Additional operation buttons would need to be added to HTML
+    window.setOperation = function(op) {
+        handleOperation(op);
+    };
+
+    window.percentage = percentage;
+    window.toggleSign = toggleSign;
 });
